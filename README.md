@@ -3,7 +3,9 @@
 A high-performance, desktop image compressor built with **Tauri v2**, **Rust**, and **React**.
 Supports smart compression for JPG, PNG (Quantization), WebP, and AVIF.
 
-![Screenshot](./public/demo-compressed.webp) ## Features 🚀
+![Screenshot](./public/demo-compressed.webp)
+
+## Features 🚀
 
 - **Lightning Fast**: Uses `Rayon` for multi-threaded parallel processing.
 - **Smart Optimization**:
