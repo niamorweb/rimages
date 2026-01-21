@@ -23,11 +23,42 @@ Supports smart compression for JPG, PNG (Quantization), WebP, and AVIF.
   - `imagequant` (PNG optimization)
   - `tauri-plugin-fs` / `dialog`
 
-## Build it yourself 📦
+## Build It Yourself 📦
 
-1. Install Rust and Node.js.
-2. Clone the repo.
-3. Install dependencies:
-   ```bash
-   npm install
-   ```
+### Prerequisites
+
+- [Rust](https://www.rust-lang.org/tools/install) (latest stable)
+- [Node.js](https://nodejs.org/) (v18 or higher)
+- Build tools for your OS (see [Tauri's guide](https://v2.tauri.app/start/prerequisites/))
+
+### Steps
+
+1. **Clone the repository**:
+
+```bash
+git clone [https://github.com/niamorweb/rimages.git](https://github.com/niamorweb/rimages.git)
+```
+
+2. **Go into the app directory**:
+
+```bash
+cd rimages
+```
+
+3. **Install dependencies**:
+
+```bash
+npm install
+```
+
+4. **Run in Development mode**:
+
+```bash
+npm run tauri dev
+```
+
+5. **Build Production Installer (Optionnal)**:
+
+```bash
+npm run tauri build
+```
