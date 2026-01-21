@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
+  "description": "A high-performance, desktop image compressor. Supports smart compression for JPG, PNG, WebP, and AVIF.",
   "author": {
     "name": "Romain Lathuiliere",
     "email": "niamoweb@gmail.com"
