@@ -17,7 +17,6 @@ import {
   FileUp,
   CheckCircle,
   X,
-  Trash2,
   Zap,
   Loader2,
   AlertCircle,
