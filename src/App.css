@@ -235,13 +235,11 @@ input[type="range"]::-webkit-slider-thumb:active {
   width: 100%;
   transition: all 0.2s;
   margin-top: auto;
-  box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.4);
 }
 
 .btn-primary:hover:not(:disabled) {
   background: var(--primary-hover);
   transform: translateY(-2px);
-  box-shadow: 0 6px 10px -1px rgba(16, 185, 129, 0.5);
 }
 
 .btn-primary:disabled {
@@ -305,7 +303,7 @@ input[type="range"]::-webkit-slider-thumb:active {
 }
 
 :root {
-  --primary: #10b981;
+  --primary: #105740;
   --primary-hover: #059669;
   --bg: #f8fafc;
   --sidebar-bg: #ffffff;
@@ -569,7 +567,7 @@ button {
   font-family: inherit;
 }
 .btn-primary {
-  background: var(--text);
+  background: var(--primary);
   color: #fff;
   border: none;
   padding: 12px;
@@ -627,13 +625,13 @@ button {
   background: none;
   border: none;
   color: #cbd5e1;
-  padding: 4px;
-  border-radius: 4px;
+  padding: 8px;
+  border-radius: 8px;
   display: flex;
 }
 .icon-btn:hover {
   background: #f1f5f9;
-  color: #ef4444;
+  color: #828384;
 }
 
 .btn-link {

@@ -10,6 +10,7 @@ import { useState, useEffect, useRef, memo, useCallback } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
 import { listen, UnlistenFn } from "@tauri-apps/api/event";
+import { getCurrentWebviewWindow } from "@tauri-apps/api/webviewWindow";
 import {
   Plus,
   FolderOpen,
@@ -213,17 +214,7 @@ const FileItemRow = memo(
           {status === "error" && <AlertCircle size={18} color="#ef4444" />}
 
           {status === "idle" && (
-            <button
-              onClick={onRemove}
-              className="icon-btn"
-              style={{
-                color: "#cbd5e1",
-                background: "transparent",
-                border: "none",
-                cursor: "pointer",
-                padding: 4,
-              }}
-            >
+            <button onClick={onRemove} className="icon-btn">
               <X size={18} />
             </button>
           )}
@@ -250,6 +241,7 @@ function App() {
   const [isSuccess, setIsSuccess] = useState(false);
 
   const unlisteners = useRef<UnlistenFn[]>([]);
+  const filesRef = useRef<FileItem[]>([]);
 
   // Settings
   const [format, setFormat] = useState("webp");
@@ -257,26 +249,28 @@ function App() {
   const [maxWidth, setMaxWidth] = useState<string>("");
   const [maxHeight, setMaxHeight] = useState<string>("");
 
+  useEffect(() => {
+    filesRef.current = files;
+  }, [files]);
+
   const cleanupListeners = () => {
     unlisteners.current.forEach((f) => f());
     unlisteners.current = [];
   };
 
   useEffect(() => {
-    let u1: UnlistenFn, u2: UnlistenFn, u3: UnlistenFn;
+    let unlisten: UnlistenFn;
     const init = async () => {
-      u1 = await listen("tauri://file-drop-hover", () => {});
-      u2 = await listen("tauri://file-drop-cancelled", () => {});
-      u3 = await listen("tauri://file-drop", (e) => {
-        const paths = e.payload as string[];
-        if (paths?.length) addFiles(paths);
+      unlisten = await getCurrentWebviewWindow().onDragDropEvent((event) => {
+        if (event.payload.type === "drop") {
+          const paths = event.payload.paths;
+          if (paths?.length) addFiles(paths);
+        }
       });
     };
     init();
     return () => {
-      if (u1) u1();
-      if (u2) u2();
-      if (u3) u3();
+      if (unlisten) unlisten();
     };
   }, []);
 
@@ -305,7 +299,7 @@ function App() {
   const addFiles = async (newPaths: string[]) => {
     setIsSuccess(false);
 
-    const currentPaths = new Set(files.map((f) => f.path));
+    const currentPaths = new Set(filesRef.current.map((f) => f.path));
     const uniquePaths = newPaths.filter(
       (p) => !currentPaths.has(p) && /\.(jpg|jpeg|png|webp|avif)$/i.test(p),
     );
@@ -354,8 +348,8 @@ function App() {
     }
   };
 
-  const removeFile = useCallback((index: number) => {
-    setFiles((prev) => prev.filter((_, i) => i !== index));
+  const removeFile = useCallback((path: string) => {
+    setFiles((prev) => prev.filter((f) => f.path !== path));
     setIsSuccess(false);
   }, []);
 
@@ -493,25 +487,13 @@ function App() {
               background: "#d1fae5",
               padding: 8,
               borderRadius: 12,
-              color: "#10b981",
+              color: "#105740",
             }}
           >
-            <Zap size={24} fill="#10b981" />
+            <Zap size={24} fill="#105740" />
           </div>
-          <span>Rimages</span>
+          <span>rimages</span>
         </div>
-
-        <div className="control-group">
-          <label className="label-title">Save Destination</label>
-          <button className="btn-secondary" onClick={selectOutputDir}>
-            <FolderOpen size={20} color="#64748b" />
-            <span className="truncate-text">
-              {outputDir ? outputDir.split(/[\\/]/).pop() : "Choose folder..."}
-            </span>
-          </button>
-        </div>
-
-        <hr className="divider" />
 
         <div className="control-group">
           <label className="label-title">Output Format</label>
@@ -557,6 +539,17 @@ function App() {
               onChange={(e) => setMaxHeight(e.target.value)}
             />
           </div>
+        </div>
+        <hr className="divider" />
+
+        <div className="control-group">
+          <label className="label-title">Save Destination Folder</label>
+          <button className="btn-secondary" onClick={selectOutputDir}>
+            <FolderOpen size={20} color="#64748b" />
+            <span className="truncate-text">
+              {outputDir ? outputDir.split(/[\\/]/).pop() : "Choose folder..."}
+            </span>
+          </button>
         </div>
 
         <div style={{ marginTop: "auto", width: "100%" }}>
@@ -649,7 +642,7 @@ function App() {
           </div>
         ) : (
           <>
-            <div className="flex-between" style={{ marginBottom: 20 }}>
+            <div className="flex-between">
               <h2>My Images</h2>
               <div style={{ display: "flex", gap: 10 }}>
                 <button className="btn-secondary" onClick={selectFiles}>
@@ -664,18 +657,18 @@ function App() {
                     background: "#fef2f2",
                   }}
                 >
-                  <Trash2 size={18} /> Clear All
+                  <X size={18} /> Clear All
                 </button>
               </div>
             </div>
 
             <div className="file-list">
-              {files.map((file, i) => (
+              {files.map((file) => (
                 <FileItemRow
                   key={file.path}
                   file={file}
                   status={statusMap[file.path] || "idle"}
-                  onRemove={() => removeFile(i)}
+                  onRemove={() => removeFile(file.path)}
                 />
               ))}
             </div>
